@@ -1,0 +1,89 @@
+-- Create database if not exists
+CREATE DATABASE jvdatabase2;
+USE jvdatabase2;
+
+-- Create users table
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    google_id VARCHAR(255),
+    avatar VARCHAR(500),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create cafes table with ALL required fields
+CREATE TABLE IF NOT EXISTS cafes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    rating DECIMAL(2,1) DEFAULT 0,
+    category VARCHAR(50) DEFAULT 'CAFE',
+    city VARCHAR(100),
+    province VARCHAR(100),
+    lat DECIMAL(10,8),
+    lng DECIMAL(11,8),
+    image VARCHAR(500),
+    notes TEXT,
+    has_wifi BOOLEAN DEFAULT FALSE,
+    has_sockets BOOLEAN DEFAULT FALSE,
+    has_parking BOOLEAN DEFAULT FALSE,
+    pet_friendly BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create favorites table
+CREATE TABLE IF NOT EXISTS favorites (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    cafe_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (cafe_id) REFERENCES cafes(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_favorite (user_id, cafe_id)
+);
+
+-- Create reviews table
+CREATE TABLE IF NOT EXISTS reviews (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cafe_id INT NOT NULL,
+    user_id INT NOT NULL,
+    user_name VARCHAR(100),
+    rating INT CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (cafe_id) REFERENCES cafes(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Insert sample cafe data
+INSERT INTO cafes (name, rating, category, city, province, lat, lng, image, notes, has_wifi, has_sockets, has_parking, pet_friendly) VALUES
+('Starbucks - BGC', 4.5, 'COFFEE SHOP', 'Taguig', 'Metro Manila', 14.5562, 121.0497, 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085', 'Great ambiance, perfect for working', TRUE, TRUE, TRUE, FALSE),
+('Single Origin', 4.8, 'SPECIALTY', 'Makati', 'Metro Manila', 14.5555, 121.0225, 'https://images.unsplash.com/photo-1442512595331-e89e73853f31', 'Best specialty coffee in town', TRUE, TRUE, FALSE, FALSE),
+('Deuces Coffee', 4.7, 'THIRD WAVE', 'Quezon City', 'Metro Manila', 14.6379, 121.0412, 'https://images.unsplash.com/photo-1507133750040-4a8f57021571', 'Instagram-worthy place', TRUE, TRUE, TRUE, TRUE),
+('Habitual Coffee', 4.6, 'ARTISAN', 'Makati', 'Metro Manila', 14.5538, 121.0148, 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735', 'Cozy hidden gem', TRUE, TRUE, FALSE, FALSE),
+('The Curator', 4.9, 'COCKTAIL BAR', 'Makati', 'Metro Manila', 14.5545, 121.0185, 'https://images.unsplash.com/photo-1498804103071-a6ab4a878e81', 'Coffee by day, cocktails by night', FALSE, FALSE, FALSE, FALSE);
+
+-- Insert Pangasinan cafes
+INSERT INTO cafes (name, lat, lng, rating, category, city, province, notes, has_wifi, has_sockets, has_parking, pet_friendly) VALUES
+('Starbucks - Dagupan', 16.0433, 120.3337, 4.5, 'Work', 'Dagupan City', 'Pangasinan', 'Good WiFi, plenty of outlets, airconditioned', 1, 1, 1, 0),
+('Bo''s Coffee - Dagupan', 16.0425, 120.3400, 4.3, 'Work', 'Dagupan City', 'Pangasinan', 'Quiet ambiance, great for studying', 1, 1, 1, 0),
+('Cafe de Gapan - Dagupan', 16.0440, 120.3350, 4.2, 'Casual', 'Dagupan City', 'Pangasinan', 'Local favorite, affordable drinks', 1, 0, 1, 1),
+('The Brew Project', 16.0410, 120.3380, 4.6, 'Aesthetic', 'Dagupan City', 'Pangasinan', 'Instagram-worthy interiors, specialty coffee', 1, 1, 0, 0),
+('Kaffee Haus', 16.0450, 120.3320, 4.1, 'Casual', 'Dagupan City', 'Pangasinan', 'Homey vibe, serves pasta', 1, 0, 1, 1),
+('Cafe Elliana', 16.0180, 120.2310, 4.4, 'Aesthetic', 'Lingayen', 'Pangasinan', 'Near Capitol grounds, relaxing view', 1, 1, 1, 0),
+('Bread and Brew', 16.0190, 120.2330, 4.2, 'Work', 'Lingayen', 'Pangasinan', 'Quiet place, good pastries', 1, 1, 0, 0),
+('Calasiao Coffee House', 16.0100, 120.3600, 4.3, 'Casual', 'Calasiao', 'Pangasinan', 'Known for puto, now serves coffee', 1, 0, 1, 1),
+('The Daily Brew', 16.0115, 120.3610, 4.1, 'Work', 'Calasiao', 'Pangasinan', 'Cozy space, fast WiFi', 1, 1, 0, 0),
+('Cafe de Urdaneta', 15.9760, 120.5710, 4.3, 'Casual', 'Urdaneta City', 'Pangasinan', 'Popular meetup spot', 1, 1, 1, 0),
+('Highlands Coffee - Urdaneta', 15.9750, 120.5700, 4.4, 'Work', 'Urdaneta City', 'Pangasinan', 'Cold brew specialty', 1, 1, 1, 0),
+('San Carlos Brew', 15.9280, 120.4500, 4.2, 'Aesthetic', 'San Carlos City', 'Pangasinan', 'Minimalist design, good espresso', 1, 1, 0, 1),
+('Island Brew Cafe', 16.1550, 120.0310, 4.5, 'Aesthetic', 'Alaminos City', 'Pangasinan', 'Near Hundred Islands, tourist friendly', 1, 1, 1, 0),
+('Hundred Islands Coffee', 16.1580, 120.0330, 4.3, 'Casual', 'Alaminos City', 'Pangasinan', 'Beach vibe, cold drinks', 1, 0, 1, 1),
+('Binmaley Beanery', 16.0320, 120.2690, 4.1, 'Casual', 'Binmaley', 'Pangasinan', 'Near the beach, chill atmosphere', 1, 0, 1, 1),
+('Mangaldan Coffee Project', 16.0700, 120.4020, 4.0, 'Work', 'Mangaldan', 'Pangasinan', 'Student-friendly prices', 1, 1, 1, 0),
+('Mountain Brew', 16.0300, 120.4550, 4.3, 'Aesthetic', 'Mapandan', 'Pangasinan', 'Cool weather, nice view', 1, 0, 0, 0),
+('Santa Barbara Cafe', 16.0000, 120.4180, 4.2, 'Casual', 'Santa Barbara', 'Pangasinan', 'Garden setting, pet friendly', 1, 0, 1, 1),
+('Pilgrim''s Coffee', 16.0438, 120.4885, 4.4, 'Casual', 'Manaoag', 'Pangasinan', 'Near Manaoag Church, rest stop', 1, 0, 1, 0);
+
+
+
