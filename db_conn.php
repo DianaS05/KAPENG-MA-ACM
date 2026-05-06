@@ -3,7 +3,7 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$dbname = "jvdatabase";
+$dbname = "jvdatabase2";
 
 $conn = new mysqli($host, $user, $pass, $dbname);
 
